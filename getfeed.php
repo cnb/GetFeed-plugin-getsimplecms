@@ -2,7 +2,7 @@
 /****************************************************
 *
 name: GetFeed
-version: 0.2 beta
+version: 0.3 beta
 file name:	getfeed.php
 description: Plugin for GetSimple CMS, with several functions to display feed contents
 license: GPL
@@ -18,7 +18,7 @@ $thisfile=basename(__FILE__, ".php");
 register_plugin(
 	$thisfile,
 	'GS GetFeed',
-	'0.2 beta',
+	'0.3 beta',
 	'Carlos Navarro',
 	'http://webs.org.es/getfeed/',
 	'Simple aggregator - display RSS feeds'
@@ -35,13 +35,13 @@ require_once GSPLUGINPATH.'/getfeed/magpierss/rss_fetch.inc';
 /* sample function to display a list titles linking to source post */
 function getfeed_list_titles($feedurl,$numposts=0) {
 	echo '<ul>';
-	getfeed_output($feedurl,'<li><a href="{{link}}">{{title}}</a></li>',$numposts);
+	getfeed_output($feedurl,'<li><a href="{{link}}">{{title}}</a></li>'."\n",$numposts);
 	echo '</ul>';
 }
 
 /* sample function, displays full posts */
 function getfeed_echo_posts($feedurl,$numposts=0) {
-	getfeed_output($feedurl,'<div id="post-{{pid}}" class="post-wrapper"><h2 class="post-title"><a href="{{link}}">{{title}}</a></h2><span class="post-date">{{date}}</span><p class="post-body">{{description}}</p></div>',$numposts);
+	getfeed_output($feedurl,'<div id="post-{{pid}}" class="post-wrapper"><h2 class="post-title"><a href="{{link}}">{{title}}</a></h2><span class="post-date">{{date}}</span><p class="post-body">{{description}}</p></div>'."\n",$numposts);
 }
 
 /* customize feed output */
@@ -58,19 +58,24 @@ function getfeed_output($feedurl,$html,$MAXPOSTS=0) {
 		$item = $rss->items[$i];
 		$title = $item['title'];
 		$link = $item['link'];
-		$desc = $item['description'];
+		$desc = @$item['description'];
 		if (!$desc) {
-			$desc = $item['content'];
+			$desc = @$item['content'];
+			if (!$desc) {
+				$desc = '';
+			}
 		}
-		$date = $item['date_timestamp'];
+		$date = @$item['date_timestamp'];
 		if (!$date) {		
-			$date = strtotime($item['dc']['date']);
+			$date = strtotime(@$item['dc']['date']);
 			if (!$date) {
-				$date = strtotime($item['published']);
+				$date = strtotime(@$item['published']);
 			}
 		}
 		if ($date) {
 			$date = date(GETFEED_DATE_FORMAT, $date); 
+		} else {
+			$date = '';
 		}
 		echo str_replace('{{date}}',$date,
 			 str_replace('{{pid}}',$i+1,
