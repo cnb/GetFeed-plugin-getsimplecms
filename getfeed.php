@@ -2,7 +2,7 @@
 /****************************************************
 *
 name: GetFeed
-version: 0.3 beta
+version: 0.3.1 beta
 file name:	getfeed.php
 description: Plugin for GetSimple CMS, with several functions to display feed contents
 license: GPL
@@ -18,7 +18,7 @@ $thisfile=basename(__FILE__, ".php");
 register_plugin(
 	$thisfile,
 	'GS GetFeed',
-	'0.3 beta',
+	'0.3.1 beta',
 	'Carlos Navarro',
 	'http://webs.org.es/getfeed/',
 	'Simple aggregator - display RSS feeds'
@@ -56,7 +56,7 @@ function getfeed_output($feedurl,$html,$MAXPOSTS=0) {
 	}
 	for ($i=0; $i<$num; $i++) {
 		$item = $rss->items[$i];
-		$title = $item['title'];
+		$title = strip_tags(str_replace('<','&lt;',@$item['title']));
 		$link = $item['link'];
 		$desc = @$item['description'];
 		if (!$desc) {
